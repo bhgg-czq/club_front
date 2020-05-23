@@ -10,8 +10,7 @@
         <el-aside width="166px">
           <el-row class="tac">
             <el-col>
-              <el-menu default-active="1" class="el-menu-vertical-demo"
-              @select="handleSelect">
+              <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
                 <el-submenu index="1">
                   <template slot="title">
                     <i class="el-icon-location"></i>
@@ -156,9 +155,9 @@
 
 <script>
 export default {
-
   data() {
     return {
+      row:0,
       student: {
         number: ""
       },
@@ -190,7 +189,7 @@ export default {
   },
   methods: {
     //选中的当前菜单
-    handleSelect(){
+    handleSelect() {
       console.log("选中");
     },
     //得到成员信息
@@ -207,23 +206,55 @@ export default {
     },
     //增加成员
     addMember() {
-      //   this.axios.get("http://localhost:8181/api/leader/member/1").then(res => {
-      //   this.memberList = res.data;
-      // });
-      console.log("增加成员成功！");
+      this.axios({
+        method: "post",
+        url: "http://localhost:8181/api/leader/addmember",
+        data: {
+          //参数还没修改
+          cid: 2,
+          number: this.student.number
+        }
+      }).then(res => {
+        this.$message({
+          message: res.data
+        });
+      });
     },
     //编辑成员信息
-    handleClick(row) {
-
-    },
+    handleClick(row) {},
 
     //删除成员
     handleRemove(row) {
-      this.tableData.splice(row, 1);
-      this.$message({
-        message: "删除成功",
-        type: "success"
-      });
+      this.row=row;
+      this.$confirm("此操作将永久删除该成员, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.memberList.splice(row, 1);
+          // console.log(row);
+          this.axios({
+            method: "post",
+            url: "http://localhost:8181/api/leader/deletemember",
+            //参数还没改
+            data: {
+              uid:6,
+              cid:1
+            }
+          }).then(res => {
+            this.$message({
+              type: "info",
+              message: res.data
+            });
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     //搜索
     handleSearch() {},
