@@ -1,5 +1,5 @@
 <template>
-  <div class="leader_warp">
+  <div class="leader_warp" id="admin">
     <el-container>
       <el-header height="80px">
         <div class="pic1">
@@ -39,15 +39,15 @@
         </el-aside>
         <el-main>
           <div class="search">
-            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form :inline="true" class="demo-form-inline">
               <el-form-item label="活动名称">
-                <el-input style="width: 150px" v-model="formInline.user" placeholder=""></el-input>
+                <el-input style="width: 150px" placeholder=""></el-input>
               </el-form-item>
               <el-form-item label="时间">
-                <el-date-picker v-model="formInline.data" type="date" placeholder="选择日期"></el-date-picker>
+                <el-date-picker  type="date" placeholder="选择日期"></el-date-picker>
               </el-form-item>
               <el-form-item label="分院">
-                <el-select v-model="formInline.college" placeholder="分院">
+                <el-select  placeholder="分院">
                   <el-option label="计算机与计算科学学院" value="计算机与计算科学学院"></el-option>
                   <el-option label="医学院" value="医学院"></el-option>
                   <el-option label="商学院" value="商学院"></el-option>
@@ -71,13 +71,12 @@
 
           <div class="card">
             <template>
-              <el-table :data="memberList" border style="width: 100%">
+              <el-table :data="waitList" border style="width: 100%">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="joinDate" label="申请时间" width="180"></el-table-column>
-                <el-table-column prop="name" label="社团名称" width="180"></el-table-column>
-                <el-table-column prop="uId" label="活动名称" width="180"></el-table-column>
-                <el-table-column prop="college" label="分院" width="180"></el-table-column>
-                <el-table-column prop="phone" label="申请人手机号" width="180"></el-table-column>
+                <el-table-column prop="applyDate" label="申请时间" width="180"></el-table-column>
+                <el-table-column prop="clubName" label="社团名称" width="180"></el-table-column>
+                <el-table-column prop="activityName" label="活动名称" width="180"></el-table-column>
+                <el-table-column prop="collegeName" label="分院" width="180"></el-table-column>
 
                 <el-table-column fixed="right" label="操作" width="250">
                   <template slot-scope="scope">
@@ -89,52 +88,7 @@
             </template>
           </div>
 
-          <div class="dialogs">
-            <el-dialog
-              title="添加社团成员"
-              :visible.sync="addDialogFormVisible"
-              style="width:1000px; left:300px; top:100px"
-            >
-              <el-form :model="student">
 
-                <el-form-item label="学号：" :label-width="formLabelWidth">
-                  <el-input
-                    v-model="student.number"
-                    autocomplete="off"
-                    placeholder="请输入学号"
-                    style="width: 300px;"
-                  ></el-input>
-                </el-form-item>
-
-                <!-- <el-form-item label="分院：" :label-width="formLabelWidth">
-                  <el-select v-model="student.college" placeholder="请选择分院">
-                    <el-option label="计算机与计算科学学院" value="计算机与计算科学学院"></el-option>
-                    <el-option label="医学院" value="医学院"></el-option>
-                    <el-option label="商学院" value="商学院"></el-option>
-                    <el-option label="新西兰UW学院" value="新西兰UW学院"></el-option>
-                    <el-option label="创意与艺术设计学院" value="创意与艺术设计学院"></el-option>
-                    <el-option label="信息与电气工程学院" value="信息与电气工程学院"></el-option>
-                    <el-option label="法学院" value="法学院"></el-option>
-                    <el-option label="传媒与人文学院" value="传媒与人文学院"></el-option>
-                    <el-option label="外国语学院" value="外国语学院"></el-option>
-                  </el-select>
-                </el-form-item>
-
-                <el-form-item label="手机号：" :label-width="formLabelWidth">
-                  <el-input
-                    v-model="student.phone"
-                    autocomplete="off"
-                    placeholder="请输入手机号"
-                    style="width: 500px;"
-                  ></el-input>
-                </el-form-item>-->
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="addDialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addMember">确 定</el-button>
-              </div>
-            </el-dialog>
-          </div>
         </el-main>
       </el-container>
     </el-container>
@@ -143,6 +97,7 @@
 
 <script>
   export default {
+    el:'#admin',
     data() {
       return {
         waitList:[]
@@ -161,7 +116,8 @@
         var id = this.id;
         this.axios.get("http://localhost:8181/api/admin/waittopassa").then(res => {
           console.log(res);
-          this.waitList = res;
+          this.waitList = res.data;
+          condole.log(this.waitList)
         });
       },
 
