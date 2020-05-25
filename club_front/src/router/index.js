@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Leader from '../view/leader/Leader'
 import Admin from '../view/admin/Admin.vue'
 import Login from '../view/login/Login.vue'
+
 Vue.use(Router)
 
 export default new Router({

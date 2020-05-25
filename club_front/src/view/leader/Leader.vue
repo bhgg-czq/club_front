@@ -157,6 +157,7 @@
 export default {
   data() {
     return {
+      cId:'',//社团ID
       row:0,
       student: {
         number: ""
@@ -186,6 +187,7 @@ export default {
 
   created() {
     this.getClubMember();
+    this.cId = localStorage.getItem("id")
   },
   methods: {
     //选中的当前菜单

@@ -67,6 +67,7 @@
                 <el-table-column prop="clubName" label="社团名称" width="180"></el-table-column>
                 <el-table-column prop="collegeName" label="所属分院" width="180"></el-table-column>
                 <el-table-column prop="activityName" label="活动名称" width="180"></el-table-column>
+                <el-table-column prop="className" label="活动地点" width="150"></el-table-column>
                 <el-table-column prop="number" label="限定人数" width="80"></el-table-column>
                 <el-table-column prop="startTime" label="活动时间" width="180"></el-table-column>
                 <el-table-column prop="isPass" label="审核结果" width="80"></el-table-column>
@@ -94,14 +95,17 @@
     el:'#admin',
     data() {
       return {
-        adminId:'1',
+        adminId:'1',//默认值为1
         activityId:'',
         aList:[],
 
       };
     },
     created() {
+      this.adminId = localStorage.getItem("id")
+      console.log(this.adminId)//疑问这里不会有异步问题吗
       this.getWaittoPassa();
+
     },
     methods: {
       //选中的当前菜单
@@ -131,11 +135,12 @@
       },
       //通过活动
       handlePass(row) {
-        this.aid = row.aId
-        this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.activitId}`)
+        this.activityId = row.aId
+        this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.adminId}/${this.activityId}`)
           .then(res => {
             // console.log(res)
             if(res.status === 200){
+              this.activityId = ''
               this.getWaittoPassa()
             }
             else{

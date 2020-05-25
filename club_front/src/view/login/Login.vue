@@ -103,6 +103,7 @@
             })
             .then(successResponse => {
               if (successResponse.data.code === 200) {
+                localStorage.setItem("id",successResponse.data.cId)
                 this.$router.replace({path: '/leader'})
               }
             })
@@ -117,7 +118,7 @@
             })
             .then(successResponse => {
               if (successResponse.data.code === 200) {
-                console.log(successResponse)
+                localStorage.setItem("id",this.loginForm.sno)
                 this.$router.replace({path: '/admin'})
               }
             })
