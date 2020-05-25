@@ -94,7 +94,8 @@
     el:'#admin',
     data() {
       return {
-        aid:'',
+        adminId:'1',
+        activityId:'',
         aList:[],
 
       };
@@ -109,7 +110,7 @@
       },
       //待审核列表
       getWaittoPassa() {
-        this.axios.get("http://localhost:8181/api/admin/waittopassa").then(res => {
+        this.axios.get(`http://localhost:8181/api/admin/waittopassa/${this.adminId}`).then(res => {
           // console.log(res);
           this.aList = res.data;
           console.log(this.aList)
@@ -117,7 +118,7 @@
       },
       //已审核列表
       getAlreadyPassa() {
-        this.axios.get("http://localhost:8181/api/admin/passa").then(res => {
+        this.axios.get(`http://localhost:8181/api/admin/passa/${this.adminId}`).then(res => {
           // console.log(res);
           this.aList = res.data;
           for(var i = 0;i<this.aList.length;i++){
@@ -131,7 +132,7 @@
       //通过活动
       handlePass(row) {
         this.aid = row.aId
-        this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.aid}`)
+        this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.activitId}`)
           .then(res => {
             // console.log(res)
             if(res.status === 200){
@@ -145,7 +146,17 @@
 
       //拒绝通过
       handleUnPassrow(row) {
-
+        this.aid = row.aId
+        this.axios.post(`http://localhost:8181/api/admin/cancelactivity/${this.activitId}`)
+          .then(res => {
+            // console.log(res)
+            if(res.status === 200){
+              this.getWaittoPassa()
+            }
+            else{
+              window.alert("审核失败")
+            }
+          })
       },
       //搜索
       handleSearch() {},
