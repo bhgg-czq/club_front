@@ -11,27 +11,17 @@
           <el-row class="tac">
             <el-col>
               <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
-                <el-submenu index="1">
-                  <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span>活动审核</span>
-                  </template>
-                  <el-menu-item-group>
-                    <el-menu-item index="1-1">待审核</el-menu-item>
-                    <el-menu-item index="1-2">已审核</el-menu-item>
-                  </el-menu-item-group>
-                </el-submenu>
-                <el-menu-item index="2">
-                  <i class="el-icon-menu"></i>
-                  <span slot="title">table</span>
+                <el-menu-item index="1" @click="getWaittoPassa()">
+                  <i class="el-icon-menu"  ></i>
+                  <span slot="title">待审核</span>
+                </el-menu-item>
+                <el-menu-item index="2"  @click="getAlreadyPassa()">
+                  <i class="el-icon-document"></i>
+                  <span slot="title">已审核</span>
                 </el-menu-item>
                 <el-menu-item index="3">
-                  <i class="el-icon-document"></i>
-                  <span slot="title">form</span>
-                </el-menu-item>
-                <el-menu-item index="4">
                   <i class="el-icon-setting"></i>
-                  <span slot="title">editor</span>
+                  <span slot="title">组织活动</span>
                 </el-menu-item>
               </el-menu>
             </el-col>
@@ -60,25 +50,29 @@
                 </el-select>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
+                <el-button type="primary" @click="">查询</el-button>
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="onSubmit">导出数据</el-button>
+                <el-button type="primary" @click="">导出数据</el-button>
               </el-form-item>
             </el-form>
           </div>
 
           <div class="card">
             <template>
-              <el-table :data="waitList" border style="width: 100%">
+              <el-table :data="aList" border style="width: 100%">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="applyDate" label="申请时间" width="180"></el-table-column>
+                <el-table-column prop="applyDate" label="申请日期" width="120"></el-table-column>
                 <el-table-column prop="clubName" label="社团名称" width="180"></el-table-column>
+                <el-table-column prop="collegeName" label="所属分院" width="180"></el-table-column>
                 <el-table-column prop="activityName" label="活动名称" width="180"></el-table-column>
-                <el-table-column prop="collegeName" label="分院" width="180"></el-table-column>
+                <el-table-column prop="number" label="限定人数" width="80"></el-table-column>
+                <el-table-column prop="startTime" label="活动时间" width="180"></el-table-column>
+                <el-table-column prop="isPass" label="审核结果" width="80"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="250">
+
+                <el-table-column fixed="right" label="操作" width="170">
                   <template slot-scope="scope">
                     <el-button @click="handlePass(scope.row)" type="primary" size="mini">通过</el-button>
                     <el-button @click="handleUnPass(scope.row)" type="danger" size="mini">不通过</el-button>
@@ -100,7 +94,9 @@
     el:'#admin',
     data() {
       return {
-        waitList:[]
+        aid:'',
+        aList:[],
+
       };
     },
     created() {
@@ -111,74 +107,49 @@
       handleSelect() {
         console.log("选中");
       },
-      //得到成员信息
+      //待审核列表
       getWaittoPassa() {
-        var id = this.id;
         this.axios.get("http://localhost:8181/api/admin/waittopassa").then(res => {
-          console.log(res);
-          this.waitList = res.data;
-          condole.log(this.waitList)
+          // console.log(res);
+          this.aList = res.data;
+          console.log(this.aList)
         });
       },
-
-      handleAdd() {
-        this.addDialogFormVisible = true;
-      },
-      //增加成员
-      addMember() {
-        this.axios({
-          method: "post",
-          url: "http://localhost:8181/api/leader/addmember",
-          data: {
-            //参数还没修改
-            cid: 2,
-            number: this.student.number
+      //已审核列表
+      getAlreadyPassa() {
+        this.axios.get("http://localhost:8181/api/admin/passa").then(res => {
+          // console.log(res);
+          this.aList = res.data;
+          for(var i = 0;i<this.aList.length;i++){
+            if(this.aList[i].aPass === 1)
+              this.aList[i].isPass = '通过'
+            else this.aList[i].isPass = '未通过'
           }
-        }).then(res => {
-          this.$message({
-            message: res.data
-          });
+          console.log(this.aList)
         });
       },
       //通过活动
-      handlePass(row) {},
+      handlePass(row) {
+        this.aid = row.aId
+        this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.aid}`)
+          .then(res => {
+            // console.log(res)
+            if(res.status === 200){
+              this.getWaittoPassa()
+            }
+            else{
+              window.alert("审核失败")
+            }
+          })
+      },
 
       //拒绝通过
-      handleUnPassrow() {
-        this.row=row;
-        this.$confirm("是否不通过该活动", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        })
-          .then(() => {
-            this.memberList.splice(row, 1);
-            // console.log(row);
-            this.axios({
-              method: "post",
-              url: "http://localhost:8181/api/leader/deletemember",
-              //参数还没改
-              data: {
-                uid:6,
-                cid:1
-              }
-            }).then(res => {
-              this.$message({
-                type: "info",
-                message: res.data
-              });
-            });
-          })
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "已取消删除"
-            });
-          });
+      handleUnPassrow(row) {
+
       },
       //搜索
       handleSearch() {},
-      onSubmit(row) {}
+      onSubmit() {}
     },
   };
 </script>
