@@ -21,21 +21,24 @@
                     <el-menu-item index="1-2" @click="getClubMember(0)">过往成员</el-menu-item>
                   </el-menu-item-group>
                 </el-submenu>
+
+                <router-link to="/leader/passage">
                 <el-menu-item index="2">
-                  <router-link to="/leader/passage">
                     <i class="el-icon-menu"></i>
                     <span slot="title">推送发布</span>
-                  </router-link>
-
                 </el-menu-item>
+                </router-link>
+
                 <el-menu-item index="3">
                   <i class="el-icon-document"></i>
                   <span slot="title">活动申请</span>
                 </el-menu-item>
+
                 <el-menu-item index="4">
                   <i class="el-icon-setting"></i>
                   <span slot="title">往期概览</span>
                 </el-menu-item>
+
               </el-menu>
             </el-col>
           </el-row>
@@ -78,15 +81,15 @@
 
           <div class="card">
             <template>
-              <el-table :data="memberList" border style="width: 100%">
+              <el-table :data="memberList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border style="width: 100%">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column fixed prop="joinDate" label="入社时间" width="180"></el-table-column>
-                <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-                <el-table-column prop="id" label="学号" width="180"></el-table-column>
-                <el-table-column prop="college" label="分院" width="350"></el-table-column>
+                <el-table-column prop="id" label="学号" width="150"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+                <el-table-column prop="college" label="分院" width="220"></el-table-column>
                 <el-table-column prop="phone" label="手机号" width="180"></el-table-column>
+                <el-table-column prop="joinDate" label="入社时间" width="180"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="250">
+                <el-table-column fixed="right" label="操作" width="200">
                   <template slot-scope="scope">
                     <el-button @click="handleClick(scope.row)" type="primary" size="mini">编辑</el-button>
                     <el-button @click="handleRemove(scope.row)" type="danger" size="mini">删除</el-button>
@@ -101,9 +104,13 @@
             <el-pagination
               background
               layout="prev, pager, next"
-              :total="100"
+              :total=total
               @current-change="ChangePage"
-              :current-page="currentpage">
+              :current-page=currentPage
+
+              @size-change="ChangeSize"
+              :page-size=pageSize
+            >
             </el-pagination>
           </div>
 
@@ -168,134 +175,143 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      row:0,
-      student: {
-        number: ""
-      },
-      formLabelWidth: "100px",
-      addDialogFormVisible: false,
-      id: 1,
+  export default {
+    name:'Member',
+    data() {
+      return {
+        row:0,
+        student: {
+          number: ""
+        },
+        formLabelWidth: "100px",
+        addDialogFormVisible: false,
+        id: 1,
 
-      memberList: [], //成员列表
-      memState: 1,  //默认初始时状态为在社成员
-      currentpage: 1, //当前页
+        memberList: [], //成员列表
+        memState: 1,  //默认初始时状态为在社成员
+        currentPage: 1, //当前页
+        pageSize: 7,    //默认每页信息的数量
+        total:100,    //默认获得数量为100条
 
-      formInline: {
-        user: "",
-        region: "",
-        date: ""
-      },
-      newData: {
-        name: "谢霞",
-        date: "",
-        address: "内蒙古自治区 锡林郭勒盟 阿巴嘎旗",
-        city: "浙江",
-        phone: "13555253362",
-        province: "上海",
-        zip: 200333
-      }
-    };
-  },
-
-  components: {},
-
-  created() {
-    this.getClubMember(1);
-  },
-  methods: {
-    //选中的当前菜单
-    handleSelect() {
-      console.log("选中");
-    },
-    //得到成员信息
-    getClubMember(state) {
-      var id = this.id;
-      this.memState=state;
-      this.currentpage=1;
-
-      this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.currentpage+"/"+this.memState).then(res => {
-          this.memberList = res.data;
-      });
-    },
-
-    //当前页面切换
-    ChangePage: function(currentpage){
-      this.currentpage = currentpage;
-
-      this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.currentpage+"/"+this.memState).then(res => {
-        this.memberList = res.data;
-      });
-    },
-
-    handleAdd() {
-      this.addDialogFormVisible = true;
-    },
-    //增加成员
-    addMember() {
-      this.axios({
-        method: "post",
-        url: "http://localhost:8181/api/leader/addmember",
-        data: {
-          //参数还没修改
-          cid: 2,
-          number: this.student.number
+        formInline: {
+          user: "",
+          region: "",
+          date: ""
+        },
+        newData: {
+          name: "谢霞",
+          date: "",
+          address: "内蒙古自治区 锡林郭勒盟 阿巴嘎旗",
+          city: "浙江",
+          phone: "13555253362",
+          province: "上海",
+          zip: 200333
         }
-      }).then(res => {
-        this.$message({
-          message: res.data
-        });
-      });
+      };
     },
-    //编辑成员信息
-    handleClick(row) {},
 
-    //删除成员
-    handleRemove(row) {
-      this.row=row;
-      this.$confirm("此操作将永久删除该成员, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.memberList.splice(row, 1);
-          // console.log(row);
-          this.axios({
-            method: "post",
-            url: "http://localhost:8181/api/leader/deletemember",
-            //参数还没改
-            data: {
-              uid:6,
-              cid:1
-            }
-          }).then(res => {
+    components: {},
+
+    created() {
+      this.getClubMember(1);
+    },
+    methods: {
+      //选中的当前菜单
+      handleSelect() {
+        console.log("选中");
+      },
+      //得到成员信息
+      getClubMember(state) {
+        var id = this.id;
+        this.memState=state;
+
+        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
+          this.memberList = res.data;
+          this.currentPage=1;
+          this.total=this.memberList.length;
+        });
+      },
+
+      //监听页面数量的改变
+      ChangeSize:function(pageSize){
+        this.pageSize=pageSize;
+      },
+
+      //当前页面切换
+      ChangePage: function(currentPage){
+        this.currentPage = currentPage;
+
+        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
+          this.memberList = res.data;
+        });
+      },
+
+      handleAdd() {
+        this.addDialogFormVisible = true;
+      },
+      //增加成员
+      addMember() {
+        this.axios({
+          method: "post",
+          url: "http://localhost:8181/api/leader/addmember",
+          data: {
+            //参数还没修改
+            cid: 2,
+            number: this.student.number
+          }
+        }).then(res => {
+          this.$message({
+            message: res.data
+          });
+        });
+      },
+      //编辑成员信息
+      handleClick(row) {},
+
+      //删除成员
+      handleRemove(row) {
+        this.row=row;
+        this.$confirm("此操作将永久删除该成员, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            this.memberList.splice(row, 1);
+            // console.log(row);
+            this.axios({
+              method: "post",
+              url: "http://localhost:8181/api/leader/deletemember",
+              //参数还没改
+              data: {
+                uid:6,
+                cid:1
+              }
+            }).then(res => {
+              this.$message({
+                type: "info",
+                message: res.data
+              });
+            });
+          })
+          .catch(() => {
             this.$message({
               type: "info",
-              message: res.data
+              message: "已取消删除"
             });
           });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
-    //搜索
-    handleSearch() {},
-    onSubmit(row) {}
-  }
-};
+      },
+      //搜索
+      handleSearch() {},
+      onSubmit(row) {}
+    }
+  };
 </script>
 
 
 <style scoped>
-.page{
-  margin-top: 20px;
-  /*margin-left: 12%;*/
-}
+  .page{
+    margin-top: 20px;
+    /*margin-left: 12%;*/
+  }
 </style>
