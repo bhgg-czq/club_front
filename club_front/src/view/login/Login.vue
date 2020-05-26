@@ -11,7 +11,7 @@
         <span :class="$style.span">密码</span>
         <input type="password" v-model="loginForm.password" placeholder="请输入密码"/>
         <br><br>
-        <input type="checkbox" onchange="this.isLeader = this.isLeader == true ? false:true;">是否管理员</input>
+        <input id="type" type="checkbox">是否管理员</input>
         <br><br>
         <button :class="$style.button1" v-on:click="login">登录</button>
         <button :class="$style.button2" v-on:click="login">XXX</button>
@@ -85,13 +85,17 @@
           sno: '',
           password: ''
         },
-        isLeader:true,
-        responseResult: []
+        isLeader:true
       }
     },
     methods: {
       login () {
+        var input = document.getElementById("type")
+        if(input.checked){
+          this.isLeader = false;
+        }
         if(this.isLeader){
+          console.log("try")
           this.axios
             .post('http://localhost:8181/api/leader/login', {
               id: this.loginForm.sno,
@@ -99,6 +103,7 @@
             })
             .then(successResponse => {
               if (successResponse.data.code === 200) {
+                localStorage.setItem("id",successResponse.data.cId)
                 this.$router.replace({path: '/leader'})
               }
             })
@@ -113,7 +118,8 @@
             })
             .then(successResponse => {
               if (successResponse.data.code === 200) {
-                this.$router.replace({path: '/leader'})
+                localStorage.setItem("id",this.loginForm.sno)
+                this.$router.replace({path: '/admin'})
               }
             })
             .catch(failResponse => {
