@@ -50,10 +50,11 @@
                 <el-input style="width: 150px" v-model="formInline.user" placeholder="姓名"></el-input>
               </el-form-item>
               <el-form-item label="时间">
-                <el-date-picker v-model="formInline.data" type="date" placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="formInline.date" type="date" placeholder="选择日期"></el-date-picker>
               </el-form-item>
               <el-form-item label="分院">
                 <el-select v-model="formInline.college" placeholder="分院">
+                  <el-option label="" value=""></el-option>
                   <el-option label="计算机与计算科学学院" value="计算机与计算科学学院"></el-option>
                   <el-option label="医学院" value="医学院"></el-option>
                   <el-option label="商学院" value="商学院"></el-option>
@@ -175,6 +176,7 @@
 </template>
 
 <script>
+  import moment, { now } from 'moment';
   export default {
     name:'Member',
     data() {
@@ -192,11 +194,10 @@
         currentPage: 1, //当前页
         pageSize: 7,    //默认每页信息的数量
         total:100,    //默认获得数量为100条
-
         formInline: {
           user: "",
-          region: "",
-          date: ""
+          college: "",
+          date: new Date()
         },
         newData: {
           name: "谢霞",
@@ -302,7 +303,40 @@
           });
       },
       //搜索
-      handleSearch() {},
+      //搜索成员
+      handleSearch() {
+
+        // this.formInline.date=moment(d).format("YYYY-MM-DD");
+        console.log(this.formInline.date)
+        var d = new Date(this.formInline.date);
+        d=d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+        console.log(d);
+
+        this.axios({
+          method: "post",
+          url: "http://localhost:8181/api/leader/searchmember",
+          data: {
+            //参数还没修改
+            cid: 1,
+            username:this.formInline.user,
+            joindate:this.formInline.date,
+            collegename:this.formInline.college
+          }
+        }).then(res => {
+
+          console.log(res.data)
+          if(res.data.length!=0){
+            this.memberList = res.data;
+          }
+          else{
+            this.$message({
+              message: "查询到数据为0条，请重试"
+            });
+          }
+
+
+        });
+      },
       onSubmit(row) {}
     }
   };

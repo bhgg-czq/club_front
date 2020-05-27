@@ -186,7 +186,7 @@
 
       //得到推送信息
       getPassage() {
-        this.axios.get("http://localhost:8181/api/passage/show1/"+this.id+"/"+this.currentPage).then(res => {
+        this.axios.get("http://localhost:8181/api/passage/show1/"+this.id).then(res => {
           this.formInline.keyStr="";
           this.passageList = res.data;
           this.total=this.passageList.length;
