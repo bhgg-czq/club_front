@@ -1,48 +1,5 @@
 <template>
-  <div class="leader_warp">
-    <el-container>
-      <el-header height="80px">
-        <div class="pic1">
-          <!-- <img src="1.jpg" alt="">         -->
-        </div>
-      </el-header>
-      <el-container>
-        <el-aside width="166px">
-          <el-row class="tac">
-            <el-col>
-              <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
-                <el-submenu index="1">
-                  <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span>成员管理</span>
-                  </template>
-                  <el-menu-item-group>
-                    <el-menu-item index="1-1" @click="getClubMember(1)">社团成员</el-menu-item>
-                    <el-menu-item index="1-2" @click="getClubMember(0)">过往成员</el-menu-item>
-                  </el-menu-item-group>
-                </el-submenu>
-
-                <router-link to="/leader/passage">
-                <el-menu-item index="2">
-                    <i class="el-icon-menu"></i>
-                    <span slot="title">推送发布</span>
-                </el-menu-item>
-                </router-link>
-
-                <el-menu-item index="3">
-                  <i class="el-icon-document"></i>
-                  <span slot="title">活动申请</span>
-                </el-menu-item>
-
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">往期概览</span>
-                </el-menu-item>
-
-              </el-menu>
-            </el-col>
-          </el-row>
-        </el-aside>
+  <div>
         <el-main style="height: 642px">
           <div class="search">
             <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -122,15 +79,6 @@
               style="width:1000px; left:300px; top:100px"
             >
               <el-form :model="student">
-                <!-- <el-form-item label="姓名：" :label-width="formLabelWidth">
-                  <el-input
-                    v-model="student.name"
-                    autocomplete="off"
-                    placeholder="请输入姓名"
-                    style="width: 500px;"
-                  ></el-input>
-                </el-form-item>-->
-
                 <el-form-item label="学号：" :label-width="formLabelWidth">
                   <el-input
                     v-model="student.number"
@@ -139,29 +87,6 @@
                     style="width: 300px;"
                   ></el-input>
                 </el-form-item>
-
-                <!-- <el-form-item label="分院：" :label-width="formLabelWidth">
-                  <el-select v-model="student.college" placeholder="请选择分院">
-                    <el-option label="计算机与计算科学学院" value="计算机与计算科学学院"></el-option>
-                    <el-option label="医学院" value="医学院"></el-option>
-                    <el-option label="商学院" value="商学院"></el-option>
-                    <el-option label="新西兰UW学院" value="新西兰UW学院"></el-option>
-                    <el-option label="创意与艺术设计学院" value="创意与艺术设计学院"></el-option>
-                    <el-option label="信息与电气工程学院" value="信息与电气工程学院"></el-option>
-                    <el-option label="法学院" value="法学院"></el-option>
-                    <el-option label="传媒与人文学院" value="传媒与人文学院"></el-option>
-                    <el-option label="外国语学院" value="外国语学院"></el-option>
-                  </el-select>
-                </el-form-item>
-
-                <el-form-item label="手机号：" :label-width="formLabelWidth">
-                  <el-input
-                    v-model="student.phone"
-                    autocomplete="off"
-                    placeholder="请输入手机号"
-                    style="width: 500px;"
-                  ></el-input>
-                </el-form-item>-->
               </el-form>
               <div slot="footer" class="dialog-footer">
                 <el-button @click="addDialogFormVisible = false">取 消</el-button>
@@ -170,8 +95,6 @@
             </el-dialog>
           </div>
         </el-main>
-      </el-container>
-    </el-container>
   </div>
 </template>
 
@@ -194,19 +117,11 @@
         currentPage: 1, //当前页
         pageSize: 7,    //默认每页信息的数量
         total:100,    //默认获得数量为100条
+
         formInline: {
           user: "",
           college: "",
           date: new Date()
-        },
-        newData: {
-          name: "谢霞",
-          date: "",
-          address: "内蒙古自治区 锡林郭勒盟 阿巴嘎旗",
-          city: "浙江",
-          phone: "13555253362",
-          province: "上海",
-          zip: 200333
         }
       };
     },
@@ -214,7 +129,10 @@
     components: {},
 
     created() {
-      this.getClubMember(1);
+      this.id=localStorage.getItem('id')
+      this.memState=localStorage.getItem('state')
+
+      this.getClubMember(this.memState);
     },
     methods: {
       //选中的当前菜单
@@ -223,9 +141,6 @@
       },
       //得到成员信息
       getClubMember(state) {
-        var id = this.id;
-        this.memState=state;
-
         this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
           this.memberList = res.data;
           this.currentPage=1;
@@ -257,10 +172,18 @@
           url: "http://localhost:8181/api/leader/addmember",
           data: {
             //参数还没修改
-            cid: 2,
+            cid: this.id,
             number: this.student.number
           }
         }).then(res => {
+          if( res.data == '添加成功'){
+            this.$message({
+              message: res.data
+            });
+
+            this.addDialogFormVisible=false
+            this.getClubMember(1)
+          }
           this.$message({
             message: res.data
           });
@@ -317,7 +240,7 @@
           url: "http://localhost:8181/api/leader/searchmember",
           data: {
             //参数还没修改
-            cid: 1,
+            cid: this.id,
             username:this.formInline.user,
             joindate:this.formInline.date,
             collegename:this.formInline.college
@@ -337,6 +260,11 @@
 
         });
       },
+
+      toPassage(){
+        this.$router.replace('/leader/passage')
+      },
+
       onSubmit(row) {}
     }
   };
@@ -345,7 +273,21 @@
 
 <style scoped>
   .page{
-    margin-top: 20px;
-    /*margin-left: 12%;*/
+    margin-top:50px;
+    margin-left: 500px;
+  }
+  .el-col {
+    border-radius: 4px;
+    background-color: #D3DCE6;
+  }
+  .el-menu-item{
+    background-color: #D3DCE6;
+    text-align: left;
+  }
+  .el-main{
+    background-color: #f2f2f2;
+  }
+  img{
+    margin: 30px 0;
   }
 </style>

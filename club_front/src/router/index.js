@@ -1,19 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Admin from '../view/admin/Admin.vue'
-import Login from '../view/login/Login.vue'
 
-import Passage from '../view/leader/Passage'    //推送
-import Member from '../view/leader/Member'    //成员
+import Admin from '../view/admin/Admin.vue'
+import Login from '../view/login/Login2.vue'
+import Leader from '../view/leader/Leader'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
-      path: '/leader/member',
-      name: 'Member',
-      component: Member
+      path:'/',
+      redirect:'/login'
     },
     {
       path: '/admin',
@@ -26,9 +24,9 @@ export default new Router({
       component:Login
     },
     {
-      path:'/leader/passage',
-      name:'Passage',
-      component:Passage
+      path:'/leader',
+      name:'Leader',
+      component:Leader
     }
   ]
 })

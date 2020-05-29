@@ -11,7 +11,7 @@
         <span :class="$style.span">密码</span>
         <input type="password" v-model="loginForm.password" placeholder="请输入密码"/>
         <br><br>
-        <input id="type" type="checkbox">是否管理员</input>
+        <input id="type" type="checkbox">是否管理员
         <br><br>
         <button :class="$style.button1" v-on:click="login">登录</button>
         <button :class="$style.button2" v-on:click="login">XXX</button>
@@ -101,13 +101,29 @@
               id: this.loginForm.sno,
               password: this.loginForm.password
             })
-            .then(successResponse => {
-              if (successResponse.data.code === 200) {
-                localStorage.setItem("id",successResponse.data.cId)
-                this.$router.replace({path: '/leader'})
+            .then(res => {
+              if (res.data.code === 200) {
+                localStorage.setItem("id",res.data.cId)
+                console.log(localStorage.getItem("id"))
+                this.$router.replace({path: '/leader/member'})
+              }
+              if(res.data.code === 300){
+                console.log(300)
+                this.$message({
+                  type: "info",
+                  message: "还没有获得权限哦！"
+                });
+              }
+              if(res.data.code === 400){
+                this.$message({
+                  type: "info",
+                  message: "密码错误！"
+                });
+                this.loginForm.password="";
               }
             })
             .catch(failResponse => {
+
             })
         }
         else {

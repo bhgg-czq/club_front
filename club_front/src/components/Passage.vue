@@ -1,42 +1,5 @@
 <template>
-  <div class="leader_warp">
-    <el-container>
-      <el-header height="80px">
-        <div class="pic1">
-          <!-- <img src="1.jpg" alt="">         -->
-        </div>
-      </el-header>
-      <el-container>
-        <el-aside width="166px">
-          <el-row class="tac">
-            <el-col>
-              <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleSelect">
-                <el-submenu index="1">
-                  <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span>成员管理</span>
-                  </template>
-                  <el-menu-item-group>
-                    <router-link to="/leader/member"><el-menu-item index="1-1" @click="getClubMember(1)">社团成员</el-menu-item></router-link>
-                    <router-link to="/leader/member"><el-menu-item index="1-2" @click="getClubMember(0)">过往成员</el-menu-item></router-link>
-                  </el-menu-item-group>
-                </el-submenu>
-                <el-menu-item index="2">
-                  <i class="el-icon-menu"></i>
-                  <router-link to="/leader/passage" slot="title">推送发布</router-link>
-                </el-menu-item>
-                <el-menu-item index="3">
-                  <i class="el-icon-document"></i>
-                  <span slot="title">活动申请</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">往期概览</span>
-                </el-menu-item>
-              </el-menu>
-            </el-col>
-          </el-row>
-        </el-aside>
+  <div>
         <el-main style="height: 642px">
           <div class="search">
             <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -59,11 +22,11 @@
               <el-table :data="passageList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border style="width: 100%">
                 <el-table-column prop="pid" label="ID" width="55" ></el-table-column>
                 <el-table-column prop="name" label="标题" width="180"></el-table-column>
-                <el-table-column prop="content" label="内容介绍" width="370"></el-table-column>
-                <el-table-column prop="url" label="推送链接" width="240"></el-table-column>
-                <el-table-column prop="time" label="发布时间" width="110"></el-table-column>
+                <el-table-column prop="content" label="内容介绍" width="350" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="url" label="推送链接" width="240" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="time" label="发布时间" width="130"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="170">
+                <el-table-column fixed="right" label="操作" width="180">
                   <template slot-scope="scope">
                     <el-button @click="handleClick(scope.row.ppid)" type="primary" size="mini">编辑</el-button>
                     <el-button @click="handleRemove(scope.row.pid)" type="danger" size="mini">删除</el-button>
@@ -95,7 +58,7 @@
               :visible.sync="addDialogFormVisible"
               style="width:1000px; left:300px; top:100px"
             >
-              <el-form :model="passage">
+              <el-form :model="passage" ref="passage">
 
                 <el-form-item label="标题：" :label-width="formLabelWidth">
                   <el-input
@@ -105,11 +68,12 @@
                     style="width: 300px;"
                   ></el-input>
                 </el-form-item>
-                <el-form-item label="内容介绍：" :label-width="formLabelWidth">
+                <el-form-item label="内容介绍：" :label-width="formLabelWidth" :show-overflow-tooltip="true">
                   <el-input
+                    type="textarea"
                     v-model="passage.content"
                     autocomplete="off"
-                    placeholder="请输入内容（50字内）"
+                    placeholder="请输入内容（100字内）"
                     style="width: 300px;"
                   ></el-input>
                 </el-form-item>
@@ -131,8 +95,6 @@
           </div>
 
         </el-main>
-      </el-container>
-    </el-container>
   </div>
 </template>
 
@@ -141,29 +103,28 @@
     name:"Passage",
     data() {
       return {
-        row:0,
-
+        row: 0,
 
         passage: {
           name: "",
-          content:"",
-          url:""
+          content: "",
+          url: ""
         },
 
         formLabelWidth: "100px",
         addDialogFormVisible: false,
 
-        id: 1,  //社团id
+        id: localStorage.getItem("id"),  //社团id
         passageList: [], //成员列表
 
         currentPage: 1, //当前页
         pageSize: 7,    //默认每页信息的数量
-        total:100,    //默认获得数量为100条
+        total: 100,    //默认获得数量为100条
 
         //搜索栏
-        formInline: { keyStr:""},
+        formInline: {keyStr: ""},
 
-      };
+      }
     },
 
     components: {},
@@ -188,6 +149,7 @@
       getPassage() {
         this.axios.get("http://localhost:8181/api/passage/show1/"+this.id).then(res => {
           this.formInline.keyStr="";
+
           this.passageList = res.data;
           this.total=this.passageList.length;
         });
@@ -210,34 +172,44 @@
 
       addPassage:function(){
         var _this=this;
+        if(this.passage.name == '' || this.passage.content == '' ||this.passage.url == '')
+          this.$message({
+            type: "info",
+            message: "所填项不能为空！"
+          });
+        else if(this.passage.content.length>100)
+          this.$message({
+            type: "info",
+            message: "推送内容不能超过100个字！"
+          });
+        else
+          this.axios({
+            method: "post",
+            url: "http://localhost:8181/api/passage/putup",
+            data: {
+              cid: _this.id,
+              name:_this.passage.name,
+              content:_this.passage.content,
+              url:_this.passage.url,
+              img:null
+            }
+          }).then(res => {
+            if(res.data==1){
+              this.$message({
+                message: '发布成功！'
+              });
+              _this.addDialogFormVisible = false;
+              _this.getPassage();
+              _this.passage={};
+            }
 
-        this.axios({
-          method: "post",
-          url: "http://localhost:8181/api/passage/putup",
-          data: {
-            cid: _this.id,
-            name:_this.passage.name,
-            content:_this.passage.content,
-            url:_this.passage.url,
-            img:null
-          }
-        }).then(res => {
-          if(res.data==1){
-            this.$message({
-              message: '发布成功！'
-            });
-            _this.addDialogFormVisible = false;
-            _this.getPassage();
-            _this.passage={};
-          }
+            else{
+              this.$message({
+                message: '发布失败！'
+              });
+            }
 
-          else{
-            this.$message({
-              message: '发布失败！'
-            });
-          }
-
-        });
+          });
       },
 
       //删除推送
@@ -289,6 +261,10 @@
         }
       },
 
+      getClubMember(st){
+        localStorage.setItem('state',st)
+        this.$router.replace({path: '/leader/member'})
+      },
 
       onSubmit(row) {}
     }
@@ -298,7 +274,36 @@
 
 <style scoped>
   .page{
-    margin-top: 20px;
-    /*margin-left: 12%;*/
+    margin-top:30px;
+    margin-left: 500px;
+  }
+  .el-header {
+    background-color: #757e8a;
+  }
+  .el-aside{
+    background-color: #D3DCE6;
+    color: #333;
+    text-align: center;
+    line-height: 200px;
+  }
+  .el-col {
+    border-radius: 4px;
+    background-color: #D3DCE6;
+  }
+  .el-menu-item{
+    background-color: #D3DCE6;
+    text-align: left;
+  }
+  .el-main{
+    background-color: #f2f2f2;
+  }
+  img{
+    margin: 30px 0;
+  }
+  h1{
+    font-size: 40px;
+    margin-top:20px;
+    margin-left: 5px;
+    color: #fff;
   }
 </style>
