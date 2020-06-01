@@ -85,7 +85,15 @@
               .then(successResponse => {
                 if (successResponse.data.code === 200) {
                   localStorage.setItem("id",this.loginForm.sno)
+                  localStorage.setItem("type",successResponse.data.adminType)
                   this.$router.replace({path: '/admin'})
+                }
+                else if(res.data.code === 400){
+                  this.$message({
+                    type: "info",
+                    message: "密码错误！"
+                  });
+                  this.loginForm.password="";
                 }
               })
               .catch(failResponse => {
