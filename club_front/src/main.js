@@ -15,6 +15,8 @@ Vue.use(VueAxios, axios)
 
 Vue.config.productionTip = false
 
+import moment from 'moment'
+Vue.use(moment)
 
 const Routers={
 
