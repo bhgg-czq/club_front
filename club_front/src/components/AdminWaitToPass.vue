@@ -3,20 +3,18 @@
     <template>
       <el-table :data="aList" border style="width: 100%">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="applyDate" label="申请日期" width="120"></el-table-column>
         <el-table-column prop="clubName" label="社团名称" width="180"></el-table-column>
-        <el-table-column prop="collegeName" label="所属分院" width="180"></el-table-column>
         <el-table-column prop="activityName" label="活动名称" width="180"></el-table-column>
-        <el-table-column prop="className" label="活动地点" width="150"></el-table-column>
+        <el-table-column prop="collegeName" label="所属分院" width="180"></el-table-column>
+        <el-table-column prop="className" label="申请地点" width="150"></el-table-column>
         <el-table-column prop="number" label="限定人数" width="80"></el-table-column>
-        <el-table-column prop="startTime" label="活动时间" width="180"></el-table-column>
-        <el-table-column prop="isPass" label="审核结果" width="80"></el-table-column>
+        <el-table-column prop="startTime" label="活动开始时间" width="180"></el-table-column>
+        <el-table-column prop="endTime" label="活动结束时间" width="180"></el-table-column>
 
-
-        <el-table-column fixed="right" label="操作" width="170">
+        <el-table-column fixed="right" label="操作" width="170" >
           <template slot-scope="scope">
             <el-button @click="handlePass(scope.row)" type="primary" size="mini">通过</el-button>
-            <el-button @click="handleUnPass(scope.row)" type="danger" size="mini">不通过</el-button>
+            <el-button @click="writeReason(scope.row)" type="danger" size="mini">不通过</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -32,18 +30,15 @@
         return {
           adminId:'1',//默认值为1
           activityId:'',
+          tId:'',
           aList:[],
-          type:''
-
+          type:'',
         };
       },
       created() {
 
         this.$bus.$on('getwait',(data) =>{
           this.getWaittoPassa()
-        })
-        this.$bus.$on('getalready',(data) =>{
-          this.getAlreadyPassa()
         })
         this.adminId = localStorage.getItem("id")
         this.type = localStorage.getItem("type")
@@ -66,25 +61,15 @@
             console.log(this.aList)
           });
         },
-        //已审核列表
-        getAlreadyPassa() {
-          let data = new FormData();
-          data.append('type',this.type)
-          this.axios.post(`http://localhost:8181/api/admin/passa/${this.adminId}`,data).then(res => {
-            // console.log(res);
-            this.aList = res.data;
-            for(var i = 0;i<this.aList.length;i++){
-              if(this.aList[i].bPass === 1)
-                this.aList[i].isPass = '通过'
-              else this.aList[i].isPass = '未通过'
-            }
-            console.log(this.aList)
-          });
-        },
         //通过活动
         handlePass(row) {
           this.activityId = row.aId
-          this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.adminId}/${this.activityId}`)
+          this.tId = row.tId
+          let data = new FormData();
+          data.append('type',this.type)
+          data.append('aid',this.activityId)
+          data.append('tid',this.tId)
+          this.axios.post(`http://localhost:8181/api/admin/passactivity`,data)
             .then(res => {
               // console.log(res)
               if(res.status === 200){
@@ -96,11 +81,34 @@
               }
             })
         },
-
         //拒绝通过
-        handleUnPassrow(row) {
-          this.aid = row.aId
-          this.axios.post(`http://localhost:8181/api/admin/cancelactivity/${this.activitId}`)
+        writeReason(row){
+          this.$prompt('请输入拒绝通过原因', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+          }).then(({ value }) => {
+            this.$message({
+              type: 'success',
+              message: '您的理由是: ' + value
+            });
+            console.log(value)
+            this.handleUnPassrow(row,value)
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '取消输入'
+            });
+          });
+        },
+        handleUnPassrow(row,reason) {
+          this.activityId = row.aId
+          this.tId = row.tId
+          let data = new FormData();
+          data.append('type',this.type)
+          data.append('aid',this.activityId)
+          data.append('tid',this.tId)
+          data.append('reason',reason)
+          this.axios.post(`http://localhost:8181/api/admin/cancelactivity`,data)
             .then(res => {
               // console.log(res)
               if(res.status === 200){

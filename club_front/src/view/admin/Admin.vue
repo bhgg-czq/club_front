@@ -57,7 +57,8 @@
             </el-form>
           </div>
 
-          <AdminActivity></AdminActivity>
+          <AdminPass v-if = "this.switch === false"></AdminPass>
+          <AdminWait v-if="this.switch"></AdminWait>
 
 
 
@@ -69,17 +70,18 @@
 
 <script>
 
-  import AdminActivity from "../../components/AdminActivity";
+  import AdminWait from "../../components/AdminWaitToPass";
+  import AdminPass from "../../components/AdminPass";
   export default {
     el:'#admin',
     components:{
-      AdminActivity
+      AdminPass,
+      AdminWait
     },
     data() {
       return {
         adminId:'',//默认值为1
-        // activityId:'',
-        // aList:[],
+        switch:true,
         type:''
 
       };
@@ -98,10 +100,12 @@
       },
       //待审核列表
       getWaittoPassa() {
+        this.switch = true
         this.$bus.$emit('getwait',{"id":this.id,"type":this.type})
       },
       //已审核列表
       getAlreadyPassa() {
+        this.switch = false
         this.$bus.$emit('getalready',{"id":this.id,"type":this.type})
       },
       //通过活动
