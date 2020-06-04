@@ -15,7 +15,7 @@
 
         <el-table-column fixed="right" label="操作" width="105" >
           <template slot-scope="scope">
-            <el-button @click="handlePass(scope.row)" type="primary" size="mini">重新审核</el-button>
+            <el-button @click="rehandlePass(scope.row)" type="primary" size="mini">重新审核</el-button>
           </template>
         </el-table-column>
       </el-table>

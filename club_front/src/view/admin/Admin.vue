@@ -26,7 +26,7 @@
           </el-row>
         </el-aside>
         <el-main>
-          <div class="search">
+          <div class="search" v-if="this.switch !== 3">
             <el-form :inline="true" class="demo-form-inline">
               <el-form-item label="活动名称">
                 <el-input style="width: 150px" placeholder=""></el-input>
@@ -57,8 +57,9 @@
             </el-form>
           </div>
 
-          <AdminPass v-if = "this.switch === false"></AdminPass>
-          <AdminWait v-if="this.switch"></AdminWait>
+          <AdminWait v-if="this.switch === 1"></AdminWait>
+          <AdminPass v-if = "this.switch === 2"></AdminPass>
+          <AdminActivityDetail v-show="this.switch === 3"></AdminActivityDetail>
 
 
 
@@ -72,16 +73,18 @@
 
   import AdminWait from "../../components/AdminWaitToPass";
   import AdminPass from "../../components/AdminPass";
+  import AdminActivityDetail from "../../components/AdminActivityDetail";
   export default {
     el:'#admin',
     components:{
+      AdminActivityDetail,
       AdminPass,
       AdminWait
     },
     data() {
       return {
-        adminId:'',//默认值为1
-        switch:true,
+        adminId:'',
+        switch:1,
         type:''
 
       };
@@ -89,9 +92,13 @@
     created() {
       this.adminId = localStorage.getItem("id")
       this.type = localStorage.getItem("type")
+      this.$bus.$on('activitydetail',(data) =>{
+          this.getDetail(data)
+      })
+      this.$bus.$on('towait',(data) =>{
+        this.switch = 1
+      })
       console.log(this.adminId)//疑问这里不会有异步问题吗
-      // this.getWaittoPassa();
-
     },
     methods: {
       //选中的当前菜单
@@ -100,43 +107,17 @@
       },
       //待审核列表
       getWaittoPassa() {
-        this.switch = true
+        this.switch = 1
         this.$bus.$emit('getwait',{"id":this.id,"type":this.type})
       },
       //已审核列表
       getAlreadyPassa() {
-        this.switch = false
+        this.switch = 2
         this.$bus.$emit('getalready',{"id":this.id,"type":this.type})
       },
-      //通过活动
-      handlePass(row) {
-        // this.activityId = row.aId
-        // this.axios.post(`http://localhost:8181/api/admin/passactivity/${this.adminId}/${this.activityId}`)
-        //   .then(res => {
-        //     // console.log(res)
-        //     if(res.status === 200){
-        //       this.activityId = ''
-        //       this.getWaittoPassa()
-        //     }
-        //     else{
-        //       window.alert("审核失败")
-        //     }
-        //   })
-      },
-
-      //拒绝通过
-      handleUnPassrow(row) {
-        // this.aid = row.aId
-        // this.axios.post(`http://localhost:8181/api/admin/cancelactivity/${this.activitId}`)
-        //   .then(res => {
-        //     // console.log(res)
-        //     if(res.status === 200){
-        //       this.getWaittoPassa()
-        //     }
-        //     else{
-        //       window.alert("审核失败")
-        //     }
-        //   })
+      getDetail(row){
+        this.switch = 3;
+        this.$bus.$emit('getactivitydetail',row)
       },
       //搜索
       handleSearch() {},

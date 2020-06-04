@@ -1,11 +1,11 @@
 <template>
   <div class="card">
     <template>
-      <el-table :data="aList" border style="width: 100%">
+      <el-table :data="aList" border style="width: 100%"  @row-click="detail">
         <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="clubName" label="社团名称" width="180"></el-table-column>
-        <el-table-column prop="activityName" label="活动名称" width="180"></el-table-column>
-        <el-table-column prop="collegeName" label="所属分院" width="180"></el-table-column>
+        <el-table-column prop="clubName" label="社团名称" width="180" ></el-table-column>
+        <el-table-column prop="activityName" label="活动名称" width="180" ></el-table-column>
+        <el-table-column prop="collegeName" label="所属分院" width="180" ></el-table-column>
         <el-table-column prop="className" label="申请地点" width="150"></el-table-column>
         <el-table-column prop="number" label="限定人数" width="80"></el-table-column>
         <el-table-column prop="startTime" label="活动开始时间" width="180"></el-table-column>
@@ -119,9 +119,10 @@
               }
             })
         },
-        //搜索
-        handleSearch() {},
-        onSubmit() {}
+        //查看活动详细内容
+        detail(row){
+          this.$bus.$emit('activitydetail',row)
+        }
     }
     }
 </script>
