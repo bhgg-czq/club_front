@@ -56,11 +56,18 @@
             this.axios.post(`http://localhost:8181/api/admin/passa/${this.adminId}`,data).then(res => {
               // console.log(res);
               this.aList = res.data;
-              for(var i = 0;i<this.aList.length;i++){
-                if(this.aList[i].state === 1)
-                  this.aList[i].isPass = '通过'
-                else this.aList[i].isPass = '未通过'
-              }
+              if(this.type === 'class')
+                for(var i = 0;i<this.aList.length;i++){
+                  if(this.aList[i].state === 1)
+                    this.aList[i].isPass = '通过'
+                  else this.aList[i].isPass = '未通过'
+                }
+              else
+                for(var i = 0;i<this.aList.length;i++){
+                  if(this.aList[i].aPass === 1)
+                    this.aList[i].isPass = '通过'
+                  else this.aList[i].isPass = '未通过'
+                }
               console.log(this.aList)
             });
           }

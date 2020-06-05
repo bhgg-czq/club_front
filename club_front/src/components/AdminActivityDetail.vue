@@ -61,8 +61,7 @@
             .then(res => {
               // console.log(res)
               if(res.status === 200){
-                this.activityId = ''
-                this.getWaittoPassa()
+                this.$bus.$emit('towait')
               }
               else{
                 window.alert("审核失败")
