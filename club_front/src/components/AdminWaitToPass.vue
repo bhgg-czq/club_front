@@ -28,7 +28,7 @@
         name: "AdminActivity",
       data() {
         return {
-          adminId:'1',//默认值为1
+          adminId:'',//默认值为1
           activityId:'',
           tId:'',
           aList:[],

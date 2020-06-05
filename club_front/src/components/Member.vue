@@ -153,7 +153,7 @@
         addDialogFormVisible: false,
         editDialogFormVisible: false,
 
-        id: 1,
+        id: '',
 
         memberList: [], //成员列表
         memState: 1,  //默认初始时状态为在社成员
