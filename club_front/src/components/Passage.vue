@@ -20,15 +20,14 @@
           <div class="card">
             <template>
               <el-table :data="passageList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border style="width: 100%">
-                <el-table-column prop="pid" label="ID" width="55" ></el-table-column>
-                <el-table-column prop="name" label="标题" width="180"></el-table-column>
-                <el-table-column prop="content" label="内容介绍" width="350" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="url" label="推送链接" width="240" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="time" label="发布时间" width="130"></el-table-column>
+                <el-table-column prop="pid" label="ID" width="55" align="center"></el-table-column>
+                <el-table-column prop="name" label="标题" width="180" align="center"></el-table-column>
+                <el-table-column prop="content" label="内容介绍" width="350" :show-overflow-tooltip="true" align="center"></el-table-column>
+                <el-table-column prop="url" label="推送链接" width="260" :show-overflow-tooltip="true" align="center"></el-table-column>
+                <el-table-column prop="time" label="发布时间" width="140" align="center"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="180">
+                <el-table-column fixed="right" label="操作" width="200" align="center">
                   <template slot-scope="scope">
-                    <el-button @click="handleClick(scope.row.ppid)" type="primary" size="mini">编辑</el-button>
                     <el-button @click="handleRemove(scope.row.pid)" type="danger" size="mini">删除</el-button>
                   </template>
                 </el-table-column>

@@ -28,12 +28,19 @@
                 <el-table-column prop="peopletype" label="面向对象" width="120" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="number" label="限定人数" width="120"></el-table-column>
                 <el-table-column prop="budget" label="预算" width="120"></el-table-column>
-                <el-table-column prop="time" label="活动时间" width="180" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="detial" label="活动详情" width="180" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="time" label="活动时间" width="180" :show-overflow-tooltip="true" ></el-table-column>
+                <el-table-column prop="detial" label="活动详情" width="180" :show-overflow-tooltip="true" align="center"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="180" align="center" >
+                <el-table-column fixed="right" label="操作" width="180" align="center" v-if="type==0">
                   <template slot-scope="scope">
                     <el-button @click="handleCheck(scope.$index)" type="primary" size="mini">查看进度</el-button>
+                  </template>
+                </el-table-column>
+
+                <el-table-column fixed="right" label="活动状态" width="180" align="center" v-if="type==1">
+                  <template slot-scope="scope">
+                    <span v-if="scope.row.aPass=== 1" style="color: green">审核通过</span>
+                    <span v-if="scope.row.aPass=== 0" style="color: red">审核失败</span>
                   </template>
                 </el-table-column>
               </el-table>
@@ -196,6 +203,7 @@
     created() {
       this.id = localStorage.getItem('id')
       this.type = localStorage.getItem('type')
+      console.log(this.type)
 
       this.getwaitActList(this.type)
       this.getRoList()
@@ -286,7 +294,7 @@
             })
 
             _this.addDialogFormVisible=false
-            _this.getwaitActList(0);
+            _this.getwaitActList(_this.type);
             _this.ruleForm={}
         })
 

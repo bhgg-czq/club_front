@@ -36,7 +36,7 @@
 
         <el-col :span="8" v-if="this.value == 'error'">
           <el-card class="box-card1">
-            <el-alert v-for="item in notPassList" :key="item.id"
+            <el-alert v-for="item in notPassList" :key="item.id" style="margin-top: 10px"
               :title=item.name
               type="error"
               :description=item.reason
@@ -194,8 +194,11 @@
             var end = new Date(room.endtime);
             var end1=end.getTime(end);
 
+            console.log(end1);
+
             var s = this.ruleForm.time[0]+28800000;
             var e = this.ruleForm.time[1]+28800000;
+            console.log(e);
 
             var rid=room.id;
 
@@ -230,8 +233,8 @@
             data:{
               aid:localStorage.getItem('aid'),
               rid:this.ruleForm.className,
-              start:this.ruleForm.time[0],
-              end:this.ruleForm.time[1]
+              start:this.ruleForm.time[0]+28800000,
+              end:this.ruleForm.time[1]+28800000
             }
           }).then(res=>{
             if (res.data == 1){
@@ -241,8 +244,8 @@
 
               for(var r of _this.allList)
                 if(r.id == _this.ruleForm.className){
-                  var start= this.renderTime(this.ruleForm.time[0]);
-                  var end=this.renderTime(this.ruleForm.time[1]);
+                  var start= this.renderTime(this.ruleForm.time[0]+28800000);
+                  var end=this.renderTime(this.ruleForm.time[1]+28800000);
                   var name=r.name;
 
                   this.waitPass="于 "+start+" 到 "+end+" 使用 "+name+" 的场地申请已提交，请耐心等待";

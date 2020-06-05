@@ -41,15 +41,15 @@
             <template>
               <el-table :data="memberList.slice((currentPage-1)*pageSize,currentPage*pageSize)" border style="width: 100%">
                 <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="id" label="学号" width="150"></el-table-column>
-                <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-                <el-table-column prop="college" label="分院" width="220"></el-table-column>
-                <el-table-column prop="phone" label="手机号" width="180"></el-table-column>
-                <el-table-column prop="joinDate" label="入社时间" width="180"></el-table-column>
+                <el-table-column prop="id" label="学号" width="150" align="center"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="150" align="center"></el-table-column>
+                <el-table-column prop="college" label="分院" width="220" align="center"></el-table-column>
+                <el-table-column prop="phone" label="手机号" width="180" align="center"></el-table-column>
+                <el-table-column prop="joinDate" label="入社时间" width="180" align="center"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="200">
+                <el-table-column fixed="right" label="操作" width="200" align="center">
                   <template slot-scope="scope">
-                    <el-button @click="handleClick(scope.row)" type="primary" size="mini">编辑</el-button>
+                    <el-button @click="handleClick(scope.row.id,scope.row.phone)" type="primary" size="mini">编辑</el-button>
                     <el-button @click="handleRemove(scope.row)" type="danger" size="mini">删除</el-button>
                   </template>
                 </el-table-column>
@@ -72,7 +72,8 @@
             </el-pagination>
           </div>
 
-          <div class="dialogs">
+          <!--增加社员的弹出框-->
+          <div class="addDialog">
             <el-dialog
               title="添加社团成员"
               :visible.sync="addDialogFormVisible"
@@ -94,6 +95,41 @@
               </div>
             </el-dialog>
           </div>
+
+          <!--编辑社员的弹出框-->
+          <div class="editDialog">
+            <el-dialog
+              title="编辑社团成员"
+              :visible.sync="editDialogFormVisible"
+              style="width:1000px; left:300px; top:100px"
+            >
+              <el-form :model="edit">
+                <el-form-item label="学号：" :label-width="formLabelWidth">
+                  <el-input
+                    v-model="edit.id"
+                    autocomplete="off"
+                    placeholder="edit.id"
+                    :disabled="true"
+                    style="width: 300px;"
+                  ></el-input>
+                </el-form-item>
+
+                <el-form-item label="联系方式：" :label-width="formLabelWidth">
+                  <el-input
+                    v-model="edit.phone"
+                    autocomplete="off"
+                    placeholder="edit.phone"
+                    style="width: 300px;"
+                  ></el-input>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="editDialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="editMember">确 定</el-button>
+              </div>
+            </el-dialog>
+          </div>
+
         </el-main>
   </div>
 </template>
@@ -108,8 +144,15 @@
         student: {
           number: ""
         },
+        edit:{
+          id:'',
+          phone:''
+        },
+
         formLabelWidth: "100px",
         addDialogFormVisible: false,
+        editDialogFormVisible: false,
+
         id: 1,
 
         memberList: [], //成员列表
@@ -189,8 +232,32 @@
           });
         });
       },
+
       //编辑成员信息
-      handleClick(row) {},
+      handleClick(id,phone) {
+        this.editDialogFormVisible=true;
+        this.edit.id=id;
+        this.edit.phone=phone;
+      },
+      editMember(){
+        this.axios({
+          method:'post',
+          url:"http://localhost:8181/api/leader/editMember",
+          data:{
+            id:this.edit.id,
+            phone:this.edit.phone
+          }
+        }).then(res=>{
+          if(res.data==1){
+            this.$message({
+              message:"信息修改成功！"
+            })
+            this.edit={}
+            this.getClubMember(1)
+            this.editDialogFormVisible=false;
+          }
+        })
+      },
 
       //删除成员
       handleRemove(row) {
