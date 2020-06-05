@@ -31,15 +31,16 @@
                 <el-table-column prop="time" label="活动时间" width="180" :show-overflow-tooltip="true" ></el-table-column>
                 <el-table-column prop="detial" label="活动详情" width="180" :show-overflow-tooltip="true" align="center"></el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="180" align="center" v-if="type==0">
+                <el-table-column fixed="right" label="操作" width="220" align="center" v-if="type==0">
                   <template slot-scope="scope">
                     <el-button @click="handleCheck(scope.$index)" type="primary" size="mini">查看进度</el-button>
+                    <el-button @click="cancle(scope.$index)" type="danger" size="mini">取消申请</el-button>
                   </template>
                 </el-table-column>
 
                 <el-table-column fixed="right" label="活动状态" width="180" align="center" v-if="type==1">
                   <template slot-scope="scope">
-                    <span v-if="scope.row.aPass=== 1" style="color: green">审核通过</span>
+                    <span v-if="scope.row.aPass=== 1" style="color: lawngreen">审核通过</span>
                     <span v-if="scope.row.aPass=== 0" style="color: red">审核失败</span>
                   </template>
                 </el-table-column>
@@ -290,7 +291,8 @@
 
           if(res.data == 1)
             this.$message({
-              message: '发布成功！'
+              type:"success",
+              message: '发布活动成功！'
             })
 
             _this.addDialogFormVisible=false
@@ -317,6 +319,34 @@
 
         this.$emit('my-check',this.msg);
 
+      },
+
+      //取消活动申请
+      cancle(i){
+        this.$confirm("此操作将永久取消该活动的申请, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            var _this=this;
+            var aid = this.activityList[i].aId;
+            this.axios.get('http://localhost:8181/api/leader/cancelActivity/'+aid).then(res => {
+                if(res.data==1){
+                  this.$message({
+                    type:"success",
+                    message:"取消申请成功！"
+                  })
+                  _this.getwaitActList(_this.type);
+                }
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
       },
 
       onSubmit(row) {}

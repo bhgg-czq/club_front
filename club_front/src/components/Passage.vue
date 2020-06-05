@@ -173,7 +173,7 @@
         var _this=this;
         if(this.passage.name == '' || this.passage.content == '' ||this.passage.url == '')
           this.$message({
-            type: "info",
+            type: "warning",
             message: "所填项不能为空！"
           });
         else if(this.passage.content.length>100)
@@ -195,6 +195,7 @@
           }).then(res => {
             if(res.data==1){
               this.$message({
+                type:"success",
                 message: '发布成功！'
               });
               _this.addDialogFormVisible = false;
@@ -204,6 +205,7 @@
 
             else{
               this.$message({
+                type:"error",
                 message: '发布失败！'
               });
             }
@@ -223,13 +225,13 @@
               if(res.data==1){
                 this.getPassage();
                 this.$message({
-                  type: "info",
+                  type:"success",
                   message: "删除成功！"
                 });
               }
               else
                 this.$message({
-                  type: "info",
+                  type: "error",
                   message: "删除失败！"
                 });
             })
@@ -248,7 +250,7 @@
         var keyword=this.formInline.keyStr;
         if(keyword=="")
           this.$message({
-            type: "info",
+            type: "warning",
             message: "搜索词不能为空!"
           });
         else{
