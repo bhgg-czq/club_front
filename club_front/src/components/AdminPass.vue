@@ -28,7 +28,7 @@
         name: "AdminPass",
         data() {
           return {
-            adminId:'1',//默认值为1
+            adminId:'',//默认值为1
             activityId:'',
             aList:[],
             type:'',

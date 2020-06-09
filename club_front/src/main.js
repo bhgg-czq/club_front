@@ -21,9 +21,7 @@ Vue.config.productionTip = false
 import moment from 'moment'
 Vue.use(moment)
 
-const Routers={
 
-}
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -32,4 +30,24 @@ new Vue({
   template: '<App/>'
 })
 
+//检查是否有用户登录，若无登录用户则跳转登录页面
+router.beforeEach((to,from,next)=>{
+  if(to.path != '/login')
+  {
+    if(checkToken()){
+      next()
+    }
+    else {
+      next('login');
+    }
+  }
+})
+function checkToken(){
+  if(localStorage.getItem('role') !== null){
+    console.log(localStorage.getItem('role')+"is not null")
+    return true
+  }else{
+    return false
+  }
+}
 

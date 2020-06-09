@@ -239,6 +239,7 @@
           }).then(res=>{
             if (res.data == 1){
               this.$message({
+                type:"success",
                 message: '申请场地成功！'
               })
 
