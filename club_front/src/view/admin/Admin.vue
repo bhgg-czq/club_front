@@ -27,32 +27,24 @@
         </el-aside>
         <el-main>
           <div class="search" v-if="this.switch !== 3">
-            <el-form :inline="true" class="demo-form-inline">
-              <el-form-item label="活动名称">
-                <el-input style="width: 150px" placeholder=""></el-input>
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-form-item label="社团">
+                <el-input style="width: 150px" v-model="formInline.club" placeholder="请输入社团名称"></el-input>
+              </el-form-item>
+              <el-form-item label="活动">
+                <el-input style="width: 150px" v-model="formInline.activity" placeholder="请输入活动名称"></el-input>
               </el-form-item>
               <el-form-item label="时间">
-                <el-date-picker  type="date" placeholder="选择日期"></el-date-picker>
+                <el-date-picker  type="date" v-model="formInline.date" placeholder="查询此日期之前的记录"></el-date-picker>
               </el-form-item>
-              <el-form-item label="分院">
-                <el-select  placeholder="分院">
-                  <el-option label="计算机与计算科学学院" value="计算机与计算科学学院"></el-option>
-                  <el-option label="医学院" value="医学院"></el-option>
-                  <el-option label="商学院" value="商学院"></el-option>
-                  <el-option label="新西兰UW学院" value="新西兰UW学院"></el-option>
-                  <el-option label="创意与艺术设计学院" value="创意与艺术设计学院"></el-option>
-                  <el-option label="信息与电气工程学院" value="信息与电气工程学院"></el-option>
-                  <el-option label="法学院" value="法学院"></el-option>
-                  <el-option label="传媒与人文学院" value="传媒与人文学院"></el-option>
-                  <el-option label="外国语学院" value="外国语学院"></el-option>
-                </el-select>
-              </el-form-item>
+             
+
               <el-form-item>
-                <el-button type="primary" @click="">查询</el-button>
+                <el-button type="primary" @click="handleSearch">查询</el-button>
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="">导出数据</el-button>
+                <el-button type="primary" >导出数据</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -120,7 +112,41 @@
         this.$bus.$emit('getactivitydetail',row)
       },
       //搜索
-      handleSearch() {},
+       handleSearch() {
+         let url
+         if(this.switch===1){
+              url="http://localhost:8181/api/admin/searchwaittopassa"           
+         }
+         else if(this.switch===2){
+              url="http://localhost:8181/api/admin/searchpassa"   
+         }
+        this.axios({
+          method: "post",
+          url: url,
+          data: {
+            type:this.type,
+            cid: this.id,
+            username:this.formInline.user,
+            joindate:this.formInline.date,
+            collegename:this.formInline.college
+          }
+        }).then(res => {
+
+          console.log(res.data)
+          if(res.data.length!=0){
+            this.memberList = res.data;
+            this.currentPage=1;
+            this.total=this.memberList.length;
+          }
+          else{
+            this.$message({
+              message: "查询到数据为0条，请重试"
+            });
+          }
+
+
+        });
+      },
       onSubmit() {}
     },
   };

@@ -7,7 +7,7 @@
                 <el-input style="width: 150px" v-model="formInline.user" placeholder="姓名"></el-input>
               </el-form-item>
               <el-form-item label="时间">
-                <el-date-picker v-model="formInline.date" type="date" placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="formInline.date" type="date" placeholder="查询此日期之前的记录"></el-date-picker>
               </el-form-item>
               <el-form-item label="分院">
                 <el-select v-model="formInline.college" placeholder="分院">
@@ -164,8 +164,10 @@
         formInline: {
           user: "",
           college: "",
-          date: new Date()
-        }
+          date: ""
+        },
+        index:0
+        
       };
     },
 
@@ -180,6 +182,7 @@
     methods: {
       //选中的当前菜单
       handleSelect() {
+        this.index=0
         console.log("选中");
       },
       //得到成员信息
@@ -199,10 +202,30 @@
       //当前页面切换
       ChangePage: function(currentPage){
         this.currentPage = currentPage;
+        if(this.index===0)
 
-        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
-          this.memberList = res.data;
-        });
+          this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
+            this.memberList = res.data;
+          });
+
+        else{
+           this.axios({
+          method: "post",
+          url: "http://localhost:8181/api/leader/searchmember",
+          data: {
+            cid: this.id,
+            username:this.formInline.user,
+            joindate:this.formInline.date,
+            collegename:this.formInline.college
+          }
+        }).then(res => {
+          console.log(res.data)
+          if(res.data.length!=0){
+            this.memberList = res.data;
+            this.total=this.memberList.length;
+          }
+          });
+        }
       },
 
       handleAdd() {
@@ -268,17 +291,17 @@
           type: "warning"
         })
           .then(() => {
-            this.memberList.splice(row, 1);
-            // console.log(row);
+            console.log(row);
             this.axios({
               method: "post",
               url: "http://localhost:8181/api/leader/deletemember",
               //参数还没改
               data: {
-                uid:6,
-                cid:1
+                uid:this.row.id,
+                cid:this.id
               }
             }).then(res => {
+              this.getClubMember(1)
               this.$message({
                 type: "info",
                 message: res.data
@@ -296,17 +319,21 @@
       //搜索成员
       handleSearch() {
 
+        // if(this.formInline.date==="")
+        //   let a=""
+        this.index=1
         // this.formInline.date=moment(d).format("YYYY-MM-DD");
-        console.log(this.formInline.date)
-        var d = new Date(this.formInline.date);
-        d=d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
-        console.log(d);
+     //   if(this.formInline.date){
+          console.log(this.formInline.date)
+        // var d = new Date(this.formInline.date);
+        // d=d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+        // console.log(d);
+        //}
 
         this.axios({
           method: "post",
           url: "http://localhost:8181/api/leader/searchmember",
           data: {
-            //参数还没修改
             cid: this.id,
             username:this.formInline.user,
             joindate:this.formInline.date,
@@ -317,6 +344,8 @@
           console.log(res.data)
           if(res.data.length!=0){
             this.memberList = res.data;
+            this.currentPage=1;
+            this.total=this.memberList.length;
           }
           else{
             this.$message({
