@@ -1,6 +1,30 @@
 <template>
   <div class="card">
     <template>
+
+          <div class="search">
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-form-item label="社团">
+                <el-input style="width: 150px" v-model="formInline.club" placeholder="请输入社团名称"></el-input>
+              </el-form-item>
+              <el-form-item label="活动">
+                <el-input style="width: 150px" v-model="formInline.activity" placeholder="请输入活动名称"></el-input>
+              </el-form-item>
+              <el-form-item label="时间">
+                <el-date-picker  type="date" v-model="formInline.date" placeholder="查询此日期之前的记录"></el-date-picker>
+              </el-form-item>
+             
+
+              <el-form-item>
+                <el-button type="primary" @click="handleSearch">查询</el-button>
+              </el-form-item>
+
+              <el-form-item>
+                <el-button type="primary" >导出数据</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+
       <el-table :data="aList" border style="width: 100%">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="clubName" label="社团名称" width="180"></el-table-column>
@@ -32,6 +56,11 @@
             activityId:'',
             aList:[],
             type:'',
+               formInline: {
+         club: "",
+         activity: "",
+         date: "" 
+        },
           };
         },
         created() {
@@ -70,7 +99,37 @@
                 }
               console.log(this.aList)
             });
+          },
+                //搜索
+       handleSearch() {
+          console.log(this.formInline)
+          console.log(this.type)
+          console.log(this.adminId)   
+        this.axios({
+          method: "post",
+          url: "http://localhost:8181/api/admin/searchpassa",
+          data: {
+            type:this.type,
+            aid: this.adminId,
+            clubname:this.formInline.club,
+            startdate:this.formInline.date,
+            activityname:this.formInline.activity
           }
+        }).then(res => {
+          
+          if(res.data.length!=0){
+          console.log(res.data)
+           this.aList=res.data
+          }
+          else{
+            this.$message({
+              message: "查询到数据为0条，请重试"
+            });
+          }
+
+
+        });
+      },
         }
     }
 </script>

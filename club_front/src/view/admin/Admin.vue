@@ -26,28 +26,7 @@
           </el-row>
         </el-aside>
         <el-main>
-          <div class="search" v-if="this.switch !== 3">
-            <el-form :inline="true" :model="formInline" class="demo-form-inline">
-              <el-form-item label="社团">
-                <el-input style="width: 150px" v-model="formInline.club" placeholder="请输入社团名称"></el-input>
-              </el-form-item>
-              <el-form-item label="活动">
-                <el-input style="width: 150px" v-model="formInline.activity" placeholder="请输入活动名称"></el-input>
-              </el-form-item>
-              <el-form-item label="时间">
-                <el-date-picker  type="date" v-model="formInline.date" placeholder="查询此日期之前的记录"></el-date-picker>
-              </el-form-item>
-             
-
-              <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-              </el-form-item>
-
-              <el-form-item>
-                <el-button type="primary" >导出数据</el-button>
-              </el-form-item>
-            </el-form>
-          </div>
+        
 
           <AdminWait v-if="this.switch === 1"></AdminWait>
           <AdminPass v-if = "this.switch === 2"></AdminPass>
@@ -111,42 +90,7 @@
         this.switch = 3;
         this.$bus.$emit('getactivitydetail',row)
       },
-      //搜索
-       handleSearch() {
-         let url
-         if(this.switch===1){
-              url="http://localhost:8181/api/admin/searchwaittopassa"           
-         }
-         else if(this.switch===2){
-              url="http://localhost:8181/api/admin/searchpassa"   
-         }
-        this.axios({
-          method: "post",
-          url: url,
-          data: {
-            type:this.type,
-            cid: this.id,
-            username:this.formInline.user,
-            joindate:this.formInline.date,
-            collegename:this.formInline.college
-          }
-        }).then(res => {
 
-          console.log(res.data)
-          if(res.data.length!=0){
-            this.memberList = res.data;
-            this.currentPage=1;
-            this.total=this.memberList.length;
-          }
-          else{
-            this.$message({
-              message: "查询到数据为0条，请重试"
-            });
-          }
-
-
-        });
-      },
       onSubmit() {}
     },
   };

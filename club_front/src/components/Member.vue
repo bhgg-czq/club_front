@@ -83,8 +83,9 @@
                 <el-form-item label="学号：" :label-width="formLabelWidth">
                   <el-input
                     v-model="student.number"
-                    autocomplete="off"
-                    placeholder="请输入学号"
+                    type="textarea"
+                    autosize
+                    placeholder="请输入学号,多个学号输入用、隔开"
                     style="width: 300px;"
                   ></el-input>
                 </el-form-item>
