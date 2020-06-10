@@ -82,7 +82,12 @@
           getAlreadyPassa() {
             let data = new FormData();
             data.append('type',this.type)
-            this.axios.post(`http://localhost:8181/api/admin/passa/${this.adminId}`,data).then(res => {
+            data.append('id',this.adminId)
+            this.axios.post(`http://localhost:8181/api/admin/pass`,data,{
+              headers:{
+                'token':localStorage.getItem('token')
+              }
+            }).then(res => {
               // console.log(res);
               this.aList = res.data;
               if(this.type === 'class')
@@ -93,9 +98,13 @@
                 }
               else
                 for(var i = 0;i<this.aList.length;i++){
-                  if(this.aList[i].aPass === 1)
+
+                  if(this.aList[i].bPass === 0)
+                      this.aList[i].isPass='已取消'
+                  else if(this.aList[i].aPass === 1)
                     this.aList[i].isPass = '通过'
-                  else this.aList[i].isPass = '未通过'
+                  else
+                    this.aList[i].isPass = '未通过'
                 }
               console.log(this.aList)
             });

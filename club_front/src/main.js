@@ -43,8 +43,8 @@ router.beforeEach((to,from,next)=>{
   }
 })
 function checkToken(){
-  if(localStorage.getItem('role') !== null){
-    console.log(localStorage.getItem('role')+"is not null")
+  if(localStorage.getItem('token') !== null){
+    console.log(localStorage.getItem('token')+"is not null")
     return true
   }else{
     return false

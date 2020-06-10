@@ -83,7 +83,12 @@
         getWaittoPassa() {
           let data = new FormData();
           data.append('type',this.type)
-          this.axios.post(`http://localhost:8181/api/admin/waittopassa/${this.adminId}`,data).then(res => {
+          data.append('id',this.adminId)
+          this.axios.post(`http://localhost:8181/api/admin/waittopass`,data,{
+            headers:{
+              'token':localStorage.getItem('token')
+            }
+          }).then(res => {
             // console.log(res);
             this.aList = res.data;
             console.log(this.aList)
@@ -91,7 +96,7 @@
         },
         //通过活动
         handlePass(row) {
-          this.$confirm('确定通过此活动地点申请？', '提示', {
+          this.$confirm('确定通过此活动申请？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -102,7 +107,11 @@
             data.append('type',this.type)
             data.append('aid',this.activityId)
             data.append('tid',this.tId)
-            this.axios.post(`http://localhost:8181/api/admin/passactivity`,data)
+            this.axios.post(`http://localhost:8181/api/admin/passactivity`,data,{
+              headers:{
+                'token':localStorage.getItem('token')
+              }
+            })
               .then(res => {
                 // console.log(res)
                 if(res.status === 200){
@@ -147,7 +156,10 @@
           data.append('aid',this.activityId)
           data.append('tid',this.tId)
           data.append('reason',reason)
-          this.axios.post(`http://localhost:8181/api/admin/cancelactivity`,data)
+          this.axios.post(`http://localhost:8181/api/admin/cancelactivity`,data,{
+            headers:{
+              'token':localStorage.getItem('token')
+            }})
             .then(res => {
               // console.log(res)
               if(res.status === 200){
