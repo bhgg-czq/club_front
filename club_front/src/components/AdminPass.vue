@@ -53,7 +53,12 @@
           getAlreadyPassa() {
             let data = new FormData();
             data.append('type',this.type)
-            this.axios.post(`http://localhost:8181/api/admin/passa/${this.adminId}`,data).then(res => {
+            data.append('id',this.adminId)
+            this.axios.post(`http://localhost:8181/api/admin/pass`,data,{
+              headers:{
+                'token':localStorage.getItem('token')
+              }
+            }).then(res => {
               // console.log(res);
               this.aList = res.data;
               if(this.type === 'class')

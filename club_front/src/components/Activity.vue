@@ -216,7 +216,11 @@
       },
       //获得活动地点列表
       getRoList(){
-        this.axios.get("http://localhost:8181/api/classroom/list").then(res=>{
+        this.axios.get("http://localhost:8181/api/classroom/list",{
+          headers:{
+            'token':localStorage.getItem('token')
+          }
+        }).then(res=>{
           this.roomList=res.data;
         })
       },
@@ -224,7 +228,11 @@
       //得到未通过审批的活动信息
       getwaitActList(ty) {
         if (ty == 0)
-          this.axios.get("http://localhost:8181/api/activity/notpass/" + this.id).then(res => {
+          this.axios.get("http://localhost:8181/api/activity/notpass/" + this.id,{
+            headers:{
+              'token':localStorage.getItem('token')
+            }
+          }).then(res => {
             this.activityList = res.data;
           })
         else
@@ -285,6 +293,8 @@
             detail:_this.ruleForm.detail,
             limit:_this.ruleForm.peopletype,
             name:_this.ruleForm.activityName
+          },headers:{
+            'token':localStorage.getItem('token')
           }
         }).then(res=>{
           console.log(res.data)
@@ -331,7 +341,11 @@
           .then(() => {
             var _this=this;
             var aid = this.activityList[i].aId;
-            this.axios.get('http://localhost:8181/api/leader/cancelActivity/'+aid).then(res => {
+            this.axios.get('http://localhost:8181/api/leader/cancelActivity/'+aid,{
+              headers:{
+                'token':localStorage.getItem('token')
+              }
+            }).then(res => {
                 if(res.data==1){
                   this.$message({
                     type:"success",

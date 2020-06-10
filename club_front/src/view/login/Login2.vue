@@ -55,6 +55,7 @@
                   localStorage.setItem("id",res.data.cId)
                   localStorage.setItem("state",1)
                   localStorage.setItem('role',1)
+                  localStorage.setItem("token",successResponse.data.token)
                   this.$router.replace({path: '/leader'})
                 }
                 if(res.data.code === 300){
@@ -86,6 +87,7 @@
                 console.log(successResponse.data.code)
                 if (successResponse.data.code === 200) {
                   localStorage.setItem("id",this.loginForm.sno)
+                  localStorage.setItem("token",successResponse.data.token)
                   localStorage.setItem("type",successResponse.data.adminType)
                   this.$router.replace({path: '/admin'})
                   localStorage.setItem('role',1)

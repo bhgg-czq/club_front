@@ -128,7 +128,9 @@
       methods:{
         //waittoPass(正在审核的场地）
         getWaitPass(){
-          this.axios.get("http://localhost:8181/api/classroom/waitPass/"+localStorage.getItem('aid')).then(res=>{
+          this.axios.get("http://localhost:8181/api/classroom/waitPass/"+localStorage.getItem('aid'),{headers:{
+            'token':localStorage.getItem('token')
+          }}).then(res=>{
             if(res.data){
               var start= this.renderTime(res.data[0].starttime);
               var end=this.renderTime(res.data[0].endtime);
@@ -150,7 +152,9 @@
 
         //notPassList
         getNotPass(){
-          this.axios.get("http://localhost:8181/api/classroom/notPass/"+localStorage.getItem('aid')).then(res=>{
+          this.axios.get("http://localhost:8181/api/classroom/notPass/"+localStorage.getItem('aid'),{headers:{
+              'token':localStorage.getItem('token')
+            }}).then(res=>{
             if(res.data){
               this.notPassList=res.data;
               this.step=2;
@@ -168,13 +172,17 @@
 
         //allList
         getRoList(){
-          this.axios.get("http://localhost:8181/api/classroom/list").then(res=>{
+          this.axios.get("http://localhost:8181/api/classroom/list",{headers:{
+              'token':localStorage.getItem('token')
+            }}).then(res=>{
             this.allList=res.data;
           })
         },
         //passList
         getPassList(){
-          this.axios.get("http://localhost:8181/api/classroom/isPassList").then(res=>{
+          this.axios.get("http://localhost:8181/api/classroom/isPassList",{headers:{
+              'token':localStorage.getItem('token')
+            }}).then(res=>{
             if(res.data)
               this.passList=res.data;
           })
@@ -235,7 +243,9 @@
               rid:this.ruleForm.className,
               start:this.ruleForm.time[0]+28800000,
               end:this.ruleForm.time[1]+28800000
-            }
+            },headers:{
+            'token':localStorage.getItem('token')
+          }
           }).then(res=>{
             if (res.data == 1){
               this.$message({

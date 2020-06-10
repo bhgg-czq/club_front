@@ -57,7 +57,11 @@
           data.append('type',localStorage.getItem('type'))
           data.append('aid',this.form.aId)
           data.append('tid',this.form.tId)
-          this.axios.post(`http://localhost:8181/api/admin/passactivity`,data)
+          this.axios.post(`http://localhost:8181/api/admin/passactivity`,data,{
+            headers:{
+              'token':localStorage.getItem('token')
+            }
+          })
             .then(res => {
               // console.log(res)
               if(res.status === 200){
@@ -97,7 +101,11 @@
           data.append('aid',this.form.aId)
           data.append('tid',this.form.tId)
           data.append('reason',reason)
-          this.axios.post(`http://localhost:8181/api/admin/cancelactivity`,data)
+          this.axios.post(`http://localhost:8181/api/admin/cancelactivity`,data,{
+            headers:{
+              'token':localStorage.getItem('token')
+            }
+          })
             .then(res => {
               if(res.status === 200){
                 this.$bus.$emit('towait')

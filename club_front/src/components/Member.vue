@@ -184,7 +184,11 @@
       },
       //得到成员信息
       getClubMember(state) {
-        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
+        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState,{
+          headers:{
+            'token':localStorage.getItem('token')
+          }
+        }).then(res => {
           this.memberList = res.data;
           this.currentPage=1;
           this.total=this.memberList.length;
@@ -200,7 +204,11 @@
       ChangePage: function(currentPage){
         this.currentPage = currentPage;
 
-        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState).then(res => {
+        this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState,{
+          headers:{
+            'token':localStorage.getItem('token')
+          }
+        }).then(res => {
           this.memberList = res.data;
         });
       },
@@ -246,6 +254,8 @@
           data:{
             id:this.edit.id,
             phone:this.edit.phone
+          },headers:{
+            'token':localStorage.getItem('token')
           }
         }).then(res=>{
           if(res.data==1){
@@ -277,6 +287,8 @@
               data: {
                 uid:6,
                 cid:1
+              },headers:{
+                'token':localStorage.getItem('token')
               }
             }).then(res => {
               this.$message({
@@ -311,6 +323,8 @@
             username:this.formInline.user,
             joindate:this.formInline.date,
             collegename:this.formInline.college
+          },headers:{
+            'token':localStorage.getItem('token')
           }
         }).then(res => {
 
