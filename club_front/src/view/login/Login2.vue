@@ -43,8 +43,10 @@
           // if(input.checked){
           //   this.isLeader = false;
           // }
-          if(this.radio === 1){
-            console.log("try")
+
+          console.log(this.radio)
+          if(this.radio === '1'){
+            console.log("in来了")
             this.axios
               .post('http://localhost:8181/api/leader/login', {
                 id: this.loginForm.sno,
@@ -55,7 +57,7 @@
                   localStorage.setItem("id",res.data.cId)
                   localStorage.setItem("state",1)
                   localStorage.setItem('role',1)
-                  localStorage.setItem("token",successResponse.data.token)
+                  localStorage.setItem("token",res.data.token)
                   this.$router.replace({path: '/leader'})
                 }
                 if(res.data.code === 300){
