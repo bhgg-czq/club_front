@@ -68,7 +68,7 @@
         },
         //通过活动
         handlePass(row) {
-          this.$confirm('确定通过此活动地点申请？', '提示', {
+          this.$confirm('确定通过此活动申请？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'

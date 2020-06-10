@@ -69,9 +69,13 @@
                 }
               else
                 for(var i = 0;i<this.aList.length;i++){
-                  if(this.aList[i].aPass === 1)
+
+                  if(this.aList[i].bPass === 0)
+                      this.aList[i].isPass='已取消'
+                  else if(this.aList[i].aPass === 1)
                     this.aList[i].isPass = '通过'
-                  else this.aList[i].isPass = '未通过'
+                  else
+                    this.aList[i].isPass = '未通过'
                 }
               console.log(this.aList)
             });
