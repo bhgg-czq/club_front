@@ -189,9 +189,9 @@
       //得到成员信息
       getClubMember(state) {
         this.axios.get("http://localhost:8181/api/leader/member/"+this.id+"/"+this.memState,{
-          headers:{
-            'token':localStorage.getItem('token')
-          }
+          // headers:{
+          //   'token':localStorage.getItem('token')
+          // }
         }).then(res => {
           this.memberList = res.data;
           this.currentPage=1;
@@ -226,6 +226,8 @@
             username:this.formInline.user,
             joindate:this.formInline.date,
             collegename:this.formInline.college
+          },headers:{
+            'token':localStorage.getItem('token')
           }
         }).then(res => {
           console.log(res.data)
@@ -249,6 +251,8 @@
             //参数还没修改
             cid: this.id,
             number: this.student.number
+          },headers:{
+            'token':localStorage.getItem('token')
           }
         }).then(res => {
           if( res.data == '添加成功'){

@@ -123,7 +123,10 @@
             clubname:this.formInline.club,
             startdate:this.formInline.date,
             activityname:this.formInline.activity
-          }
+          },
+          // headers:{
+          //   'token':localStorage.getItem('token')
+          // }
         }).then(res => {
           
           if(res.data.length!=0){

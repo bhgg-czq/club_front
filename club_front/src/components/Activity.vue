@@ -236,7 +236,10 @@
             this.activityList = res.data;
           })
         else
-          this.axios.get("http://localhost:8181/api/activity/ispass/" + this.id).then(res => {
+          this.axios.get("http://localhost:8181/api/activity/ispass/" + this.id,{headers:{
+            'token':localStorage.getItem('token')
+          }
+          }).then(res => {
             this.activityList = res.data;
           })
 
